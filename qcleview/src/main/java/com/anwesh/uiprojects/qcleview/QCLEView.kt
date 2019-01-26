@@ -85,7 +85,7 @@ class QCLEView(ctx : Context) : View(ctx) {
             }
         }
 
-        fun startUpdadting(cb : () -> Unit) {
+        fun startUpdating(cb : () -> Unit) {
             if (dir == 0f) {
                 dir = 1f - 2 * prevScale
                 cb()
@@ -118,6 +118,50 @@ class QCLEView(ctx : Context) : View(ctx) {
             if (animated) {
                 animated = false
             }
+        }
+    }
+
+    data class QCLENode(var i : Int = 0, private val state : State = State()) {
+
+        private var next : QCLENode? = null
+        private var prev : QCLENode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < nodes - 1) {
+                next = QCLENode(0)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            canvas.drawQCLENode(0, state.scale, paint)
+            prev?.draw(canvas, paint)
+        }
+
+        fun update(cb : (Int, Float) -> Unit) {
+            state.update {
+                cb(i, it)
+            }
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            state.startUpdating(cb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : QCLENode {
+            var curr : QCLENode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
         }
     }
 }
