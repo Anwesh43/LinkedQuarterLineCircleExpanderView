@@ -209,4 +209,13 @@ class QCLEView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : QCLEView {
+            val view : QCLEView = QCLEView(activity)
+            activity.setContentView(view)
+            return view 
+        }
+    }
 }
