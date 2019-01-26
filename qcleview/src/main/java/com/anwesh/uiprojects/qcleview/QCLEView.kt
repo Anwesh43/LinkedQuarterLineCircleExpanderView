@@ -186,4 +186,26 @@ class QCLEView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : View) {
+
+        private val animator : Animator = Animator(view)
+        private val qcle : QCLE = QCLE(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            qcle.draw(canvas, paint)
+            animator.animate {
+                qcle.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            qcle.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
