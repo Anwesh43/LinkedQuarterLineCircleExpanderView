@@ -215,7 +215,7 @@ class QCLEView(ctx : Context) : View(ctx) {
         fun create(activity : Activity) : QCLEView {
             val view : QCLEView = QCLEView(activity)
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }
