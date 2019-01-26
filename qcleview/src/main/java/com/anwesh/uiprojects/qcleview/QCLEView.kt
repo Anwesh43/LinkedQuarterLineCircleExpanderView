@@ -42,14 +42,18 @@ fun Canvas.drawQCLENode(i : Int, scale : Float, paint : Paint) {
     paint.style = Paint.Style.STROKE
     val sc1 : Float = scale.divideScale(0, 2)
     val sc2 : Float = scale.divideScale(1, 2)
+    val sc21 : Float = sc2.divideScale(0, 2)
+    val sc22 : Float = sc2.divideScale(1, 2)
     val deg : Float = 360f / circles
     save()
-    translate(gap * (i + 1), h/2)
+    translate(w/2, gap * (i + 1))
+    rotate(180f * sc21)
     for (j in 0..(circles - 1)) {
         val scj1 : Float = sc1.divideScale(j, circles)
-        val scj2 : Float = sc2.divideScale(j, circles)
+        val scj2 : Float = sc22.divideScale(j, circles)
         save()
-        translate(r * scj2, 0f)
+        rotate(90f * j)
+        translate(r * scj2, r * scj2)
         drawArc(RectF(-r, -r, r, r), offset, (deg - 2 * offset) * scj1, false, paint)
         restore()
     }
@@ -77,7 +81,7 @@ class QCLEView(ctx : Context) : View(ctx) {
     data class State(var scale : Float = 0f, var dir : Float = 0f, var prevScale : Float = 0f) {
 
         fun update(cb : (Float) -> Unit) {
-            scale += scale.updateValue(dir, circles, circles)
+            scale += scale.updateValue(dir, circles, circles * 2)
             if (Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
                 dir = 0f
@@ -133,13 +137,13 @@ class QCLEView(ctx : Context) : View(ctx) {
 
         fun addNeighbor() {
             if (i < nodes - 1) {
-                next = QCLENode(0)
+                next = QCLENode(i + 1)
                 next?.prev = this
             }
         }
 
         fun draw(canvas : Canvas, paint : Paint) {
-            canvas.drawQCLENode(0, state.scale, paint)
+            canvas.drawQCLENode(i, state.scale, paint)
             prev?.draw(canvas, paint)
         }
 
