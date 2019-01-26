@@ -23,6 +23,10 @@ val foreColor : Int = Color.parseColor("#01579B")
 val backColor : Int = Color.parseColor("#BDBDBD")
 val offset : Float = 10f
 val delay : Long = 10
+val rotDeg : Float = 90f
+val halfFactor : Int = 2
+val fullDeg : Float = 360f
+val sizeOffset : Int = 1
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
@@ -34,9 +38,9 @@ fun Float.updateValue(dir : Float, a : Int, b : Int) : Float = mirrorValue(a, b)
 fun Canvas.drawQCLENode(i : Int, scale : Float, paint : Paint) {
     val w : Float = width.toFloat()
     val h : Float = height.toFloat()
-    val gap : Float = h / (nodes + 1)
+    val gap : Float = h / (nodes + sizeOffset)
     val size : Float = gap / sizeFactor
-    val r : Float = size / 2
+    val r : Float = size / halfFactor
     paint.color = foreColor
     paint.strokeWidth = Math.min(w, h) / strokeFactor
     paint.strokeCap = Paint.Cap.ROUND
@@ -45,15 +49,15 @@ fun Canvas.drawQCLENode(i : Int, scale : Float, paint : Paint) {
     val sc2 : Float = scale.divideScale(1, 2)
     val sc21 : Float = sc2.divideScale(0, 2)
     val sc22 : Float = sc2.divideScale(1, 2)
-    val deg : Float = 360f / circles
+    val deg : Float = fullDeg / circles
     save()
-    translate(w/2, gap * (i + 1))
-    rotate(180f * sc21)
+    translate(w/ halfFactor, gap * (i + 1))
+    rotate(rotDeg * sc21)
     for (j in 0..(circles - 1)) {
         val scj1 : Float = sc1.divideScale(j, circles)
         val scj2 : Float = sc22.divideScale(j, circles)
         save()
-        rotate(90f * j)
+        rotate(deg * j)
         translate(r * scj2, r * scj2)
         drawArc(RectF(-r, -r, r, r), offset, (deg - 2 * offset) * scj1, false, paint)
         restore()
