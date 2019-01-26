@@ -37,7 +37,7 @@ fun Canvas.drawQCLENode(i : Int, scale : Float, paint : Paint) {
     val size : Float = gap / sizeFactor
     val r : Float = size / 2
     paint.color = foreColor
-    paint.strokeWidth = Math.min(w, h) / sizeFactor
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
     paint.strokeCap = Paint.Cap.ROUND
     paint.style = Paint.Style.STROKE
     val sc1 : Float = scale.divideScale(0, 2)
@@ -162,6 +162,28 @@ class QCLEView(ctx : Context) : View(ctx) {
             }
             cb()
             return this
+        }
+    }
+
+    data class QCLE(var i : Int) {
+        private var curr : QCLENode = QCLENode(0)
+        private var dir : Int = 1
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            curr.draw(canvas, paint)
+        }
+
+        fun update(cb : (Int, Float) -> Unit) {
+            curr.update {i, scl ->
+                curr = curr.getNext(dir) {
+                    dir *= -1
+                }
+                cb(i, scl)
+            }
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            curr.startUpdating(cb)
         }
     }
 }
